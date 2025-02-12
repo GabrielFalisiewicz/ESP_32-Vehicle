@@ -1,3 +1,5 @@
+#include "WiFi.h"
+
 //Piny prowadzące do mostka H dla silników N20-BT39
 const int PWM_A = 14;
 const int PWM_B = 15;
@@ -17,7 +19,21 @@ const int AIN2 = 4;
 const int BIN1 = 8;
 const int BIN2 = 7;
 
+//Konfiguracja danych WiFi
+const char* ssid = "vehicle_wifi_01";
+const char* password = "ZAQ!2wsx";
+const int channel = 6;
+const int max_users = 1;
+const bool hidden_ssid = false;
+const int expower = 20; //dBm;
+
+//Dane adresowe
+IPAddress local_IP(192, 168, 5, 2);
+IPAddress gateway(192, 168, 5, 1);
+IPAddress sub(255, 255, 255, 0);
+
 void setup() {
+  Serial.begin(115200);
   pinMode(AIN1, OUTPUT);
   pinMode(AIN2, OUTPUT);
   pinMode(BIN1, OUTPUT);
@@ -26,7 +42,11 @@ void setup() {
   ledcSetup(channel_B, freq, resoultion);
   ledcAttachPin(PWM_A, channel_A);
   ledcAttachPin(PWM_B, channel_B);
-  Serial.begin(115200);
+  WiFi.softAP(ssid, password, channel, hidden_ssid, max_users);
+  WiFi.softAPConfig(local_IP, gateway, sub);
+  WiFi.setTxPower((wifi_power_t)expower);
+  Serial.println("Adress IP: ");
+  Serial.println(WiFi.softAPIP());
 }
 
 void loop() {
