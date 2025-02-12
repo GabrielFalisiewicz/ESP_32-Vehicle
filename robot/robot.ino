@@ -1,6 +1,9 @@
 #include "WiFi.h"
 #include "WiFiUdp.h"
 
+//Buzzer  
+const int BUZ_Pin = 10;
+
 //Piny prowadzące do mostka H dla silników N20-BT39
 const int PWM_A = 14;
 const int PWM_B = 15;
@@ -50,6 +53,7 @@ void setup() {
   pinMode(AIN2, OUTPUT);
   pinMode(BIN1, OUTPUT);
   pinMode(BIN2, OUTPUT);
+  pinMode(BUZ_Pin, OUTPUT);
   ledcSetup(channel_A, freq, resoultion);
   ledcSetup(channel_B, freq, resoultion);
   ledcAttachPin(PWM_A, channel_A);
@@ -83,4 +87,14 @@ void loop() {
   digitalWrite(BIN2, 0);
   ledcWrite(channel_A, value_a);
   ledcWrite(channel_B, value_b);
+}
+
+void WiFiEvent(WiFiEvent_t event){
+  switch(event){
+    case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
+      digitalWrtie(BUZ_Pin, 1);
+      delay(1000);
+      digitalWrite(BUZ_Pin, 0);
+    break;
+  }
 }
