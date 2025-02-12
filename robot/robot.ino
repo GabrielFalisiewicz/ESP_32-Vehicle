@@ -61,6 +61,7 @@ void setup() {
   WiFi.softAP(ssid, password, channel, hidden_ssid, max_users);
   WiFi.softAPConfig(local_IP, gateway, sub);
   WiFi.setTxPower((wifi_power_t)expower);
+  WiFi.onEvent(WiFiEvent);
   Serial.println("Adress IP: ");
   Serial.println(WiFi.softAPIP());
 }
@@ -68,16 +69,18 @@ void setup() {
 void loop() {
   int size_message = udp_a.parsePacket();
   if(size_message){
+      Serial.println("a");
       udp_a.read(messsage, 255);
       int tmp = int(messsage);
-      value_a = map(tmp, 0, 4095, 0, 255);
+      value_a = map(tmp, 3500, 4095, 0, 255);
   }
 
   size_message = udp_b.parsePacket();
   if(size_message){
+      Serial.println("b");
       udp_b.read(messsage, 255);
       int tmp = int(messsage);
-      value_b = map(tmp, 0, 4095, 0, 255);
+      value_b = map(tmp, 3100, 4095, 0, 255);
   }
 
   //Sterowanie do mostka 
@@ -92,7 +95,7 @@ void loop() {
 void WiFiEvent(WiFiEvent_t event){
   switch(event){
     case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
-      digitalWrtie(BUZ_Pin, 1);
+      digitalWrite(BUZ_Pin, 1);
       delay(1000);
       digitalWrite(BUZ_Pin, 0);
     break;
