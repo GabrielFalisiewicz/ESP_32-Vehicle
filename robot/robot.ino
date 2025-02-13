@@ -37,7 +37,7 @@ IPAddress gateway(192, 168, 5, 1);
 IPAddress sub(255, 255, 255, 0);
 
 //Ustawienia UDP
-const int updPort_channel_a = 1234;
+const int udpPort_channel_a = 1234;
 const int udpPort_channel_b = 5678;
 WiFiUDP udp_a;
 WiFiUDP udp_b;
@@ -64,22 +64,26 @@ void setup() {
   WiFi.onEvent(WiFiEvent);
   Serial.println("Adress IP: ");
   Serial.println(WiFi.softAPIP());
+  udp_a.begin(udpPort_channel_a);
+  udp_b.begin(udpPort_channel_b);
 }
 
 void loop() {
   int size_message = udp_a.parsePacket();
-  if(size_message){
+  value_a = 0;
+  value_b = 0;
+  if(size_message == 2){
       Serial.println("a");
-      udp_a.read(messsage, 255);
-      int tmp = int(messsage);
+      udp_a.read(messsage, 2);
+      int tmp = (uint8_t)messsage[0] | ((uint8_t)messsage[1] << 8);
       value_a = map(tmp, 3500, 4095, 0, 255);
   }
 
   size_message = udp_b.parsePacket();
   if(size_message){
       Serial.println("b");
-      udp_b.read(messsage, 255);
-      int tmp = int(messsage);
+      udp_b.read(messsage, 2);
+      int tmp = (uint8_t)messsage[0] | ((uint8_t)messsage[1] << 8);
       value_b = map(tmp, 3100, 4095, 0, 255);
   }
 
@@ -96,7 +100,7 @@ void WiFiEvent(WiFiEvent_t event){
   switch(event){
     case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
       digitalWrite(BUZ_Pin, 1);
-      delay(1000);
+      delay(800);
       digitalWrite(BUZ_Pin, 0);
     break;
   }
