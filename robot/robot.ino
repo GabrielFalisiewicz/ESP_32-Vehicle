@@ -70,8 +70,6 @@ void setup() {
 
 void loop() {
   int size_message = udp_a.parsePacket();
-  value_a = 0;
-  value_b = 0;
   if(size_message == 2){
       Serial.println("a");
       udp_a.read(messsage, 2);
